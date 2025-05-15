@@ -1,0 +1,10 @@
+name = "go-print-functions"
+compatibility_date = "2025-05-15"
+
+# Привязка вашего R2-бакета
+r2_buckets = [
+  { binding = "PECAN_MOCKUPS", bucket_name = "pecan-mockups" }
+]
+
+[functions]
+directory = "functions"
