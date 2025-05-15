@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ page.title }}</title>
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+  <main class="page-container">
+    <h1 style="text-align:center;">Customize Your Apparel</h1>
+    <div id="chat" class="chat-box"></div>
+    <div class="chat-controls">
+      <input type="text" id="chat-input" placeholder="Type your message..." />
+      <button id="chat-send">Send</button>
+    </div>
+    <h3>Your Order</h3>
+    <ul id="order-list" class="order-summary-list"></ul>
+    <form id="upload-form" enctype="multipart/form-data">
+      <label for="file-input"><strong>Upload your logo or design:</strong></label>
+      <input type="file" name="file" id="file-input" accept="image/*,.pdf" />
+      <button type="submit">Upload Logo</button>
+      <div id="upload-status"></div>
+    </form>
+    <h3>Live Preview</h3>
+    <canvas id="preview-canvas" width="600" height="600" style="max-width: 100%; border: 1px solid #ccc;"></canvas>
+    <button id="pay-button" style="display:none; margin-top:1rem;">Pay for Order</button>
+  </main>
+  <script src="/assets/chat.js"></script>
+</body>
+</html>
