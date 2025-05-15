@@ -1,4 +1,4 @@
-export async function onRequestPost(context) {
+export async function onRequest(context) {
   const { imageBase64, orderList } = await context.request.json();
   if (!orderList || !Array.isArray(orderList) || orderList.length === 0) {
     return new Response("No order data", { status: 400 });

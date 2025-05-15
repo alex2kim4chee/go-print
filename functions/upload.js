@@ -1,4 +1,4 @@
-export async function onRequestPost(context) {
+export async function onRequest(context) {
   const ct = context.request.headers.get("content-type") || "";
   if (!ct.includes("multipart/form-data")) {
     return new Response("Invalid content type", { status: 400 });

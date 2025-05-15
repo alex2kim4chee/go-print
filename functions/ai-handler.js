@@ -1,4 +1,4 @@
-export async function onRequestPost(context) {
+export async function onRequest(context) {
   const { messages } = await context.request.json();
   const systemPrompt = `
 You are a helpful AI assistant for a custom apparel website.
