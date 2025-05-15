@@ -1,5 +1,14 @@
 export async function onRequest(context) {
-  const { messages } = await context.request.json();
+  // Достаём request и env из context
+  const { request, env } = context;
+
+  // Отвечаем 405 на все методы, кроме POST
+  if (request.method !== 'POST') {
+    return new Response('Method Not Allowed', { status: 405 });
+  }
+
+  // Разбираем тело запроса
+  const { messages } = await request.json();
   const systemPrompt = `
 You are a helpful AI assistant for a custom apparel website.
 Guide the user step-by-step to:
@@ -9,16 +18,17 @@ Guide the user step-by-step to:
 4. Choose a print method (print or embroidery)
 5. Ask if the user wants double-sided printing/embroidery (+$4 or +$7)
 6. Ask for quantity
-7. Call /functions/calculate to get the price
+7. Call /api/calculate to get the price
 8. Ask for a design file upload
 Then confirm and say "Added to order" when a configuration is complete.
 Be concise and user-friendly. Always wait for user input after each step.
 `;
 
+  // Запрос к OpenAI
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${context.env.OPENAI_API_KEY}`,
+      "Authorization": `Bearer ${env.OPENAI_API_KEY}`,
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
@@ -34,6 +44,7 @@ Be concise and user-friendly. Always wait for user input after each step.
   const json = await response.json();
   const reply = json.choices?.[0]?.message?.content || "Something went wrong.";
 
+  // Возвращаем ответ клиенту
   return new Response(JSON.stringify({ reply }), {
     headers: { "Content-Type": "application/json" }
   });
