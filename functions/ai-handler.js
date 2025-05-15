@@ -1,14 +1,25 @@
 export async function onRequest(context) {
-  // Достаём request и env из context
+  // 1) Деструктурируем request и env
   const { request, env } = context;
 
-  // Отвечаем 405 на все методы, кроме POST
+  // 2) Если не POST — сразу 405
   if (request.method !== 'POST') {
     return new Response('Method Not Allowed', { status: 405 });
   }
 
-  // Разбираем тело запроса
-  const { messages } = await request.json();
+  // 3) Читаем JSON из тела
+  let payload;
+  try {
+    payload = await request.json();
+  } catch (e) {
+    return new Response('Bad JSON', { status: 400 });
+  }
+  const { messages } = payload;
+  if (!Array.isArray(messages)) {
+    return new Response('Invalid payload', { status: 400 });
+  }
+
+  // 4) Системный промпт
   const systemPrompt = `
 You are a helpful AI assistant for a custom apparel website.
 Guide the user step-by-step to:
@@ -24,8 +35,8 @@ Then confirm and say "Added to order" when a configuration is complete.
 Be concise and user-friendly. Always wait for user input after each step.
 `;
 
-  // Запрос к OpenAI
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  // 5) Запрос к OpenAI
+  const aiRes = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${env.OPENAI_API_KEY}`,
@@ -41,10 +52,15 @@ Be concise and user-friendly. Always wait for user input after each step.
     })
   });
 
-  const json = await response.json();
-  const reply = json.choices?.[0]?.message?.content || "Something went wrong.";
+  if (!aiRes.ok) {
+    const errText = await aiRes.text();
+    return new Response(`OpenAI error: ${errText}`, { status: 502 });
+  }
 
-  // Возвращаем ответ клиенту
+  const aiJson = await aiRes.json();
+  const reply = aiJson.choices?.[0]?.message?.content || "Something went wrong.";
+
+  // 6) Возвращаем клиенту
   return new Response(JSON.stringify({ reply }), {
     headers: { "Content-Type": "application/json" }
   });
