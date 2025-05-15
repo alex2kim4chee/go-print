@@ -77,7 +77,7 @@ async function sendMessage() {
     }
   }
 
-  const res = await fetch('/functions/ai-handler', {
+  const res = await fetch('/api/ai-handler', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ messages })
@@ -99,7 +99,7 @@ async function sendMessage() {
 // Расчет стоимости и финализация заказа
 async function finalizeOrder() {
   appendMessage('assistant', "Calculating total...");
-  const res = await fetch('/functions/calculate', {
+  const res = await fetch('/api/calculate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(orderList)
@@ -113,7 +113,7 @@ async function finalizeOrder() {
 payButton.onclick = async () => {
   const canvas = document.getElementById('preview-canvas');
   const dataUrl = canvas.toDataURL('image/png');
-  const res = await fetch('/functions/send-preview', {
+  const res = await fetch('/api/send-preview', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ imageBase64: dataUrl, orderList })
@@ -134,7 +134,7 @@ uploadForm.onsubmit = async (e) => {
   const formData = new FormData();
   formData.append('file', file);
   uploadStatus.innerText = "Uploading...";
-  const res = await fetch('/functions/upload', {
+  const res = await fetch('/api/upload', {
     method: 'POST',
     body: formData
   });
